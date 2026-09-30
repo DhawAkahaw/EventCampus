@@ -1,0 +1,56 @@
+services:
+
+  database:
+    image: mysql:8.4
+    container_name: eventcampus_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: eventcampus
+      MYSQL_USER: eventcampus
+      MYSQL_PASSWORD: eventcampus
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - eventcampus
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: eventcampus_backend
+    restart: unless-stopped
+    working_dir: /var/www/html
+    volumes:
+      - ./backend:/var/www/html
+    ports:
+      - "8000:8000"
+    depends_on:
+      - database
+    networks:
+      - eventcampus
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: eventcampus_frontend
+    restart: unless-stopped
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    networks:
+      - eventcampus
+
+volumes:
+  mysql_data:
+
+networks:
+  eventcampus:
+    driver: bridge
