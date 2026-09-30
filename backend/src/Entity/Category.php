@@ -50,7 +50,7 @@ class Category
     /**
      * @return Collection<int, Event>
      */
-    public function getEvent(): Collection
+    public function getEvents(): Collection
     {
         return $this->events;
     }
